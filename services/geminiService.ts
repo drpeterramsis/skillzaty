@@ -6,16 +6,24 @@ let genAI: GoogleGenAI | null = null;
 export const initializeGemini = () => {
   let apiKey: string | undefined | null = null;
 
-  // Check process.env safely
-  if (typeof process !== 'undefined' && process.env) {
-    apiKey = process.env.API_KEY;
+  try {
+    // Check process.env safely
+    if (typeof process !== 'undefined' && process.env) {
+      apiKey = process.env.API_KEY;
+    }
+  } catch (e) {
+    // Ignore ReferenceError if process is not defined
   }
   
-  // Fallback to import.meta.env for Vite/Browser environments
-  // @ts-ignore
-  if (!apiKey && typeof import.meta !== 'undefined' && import.meta.env) {
+  try {
+    // Fallback to import.meta.env for Vite/Browser environments
     // @ts-ignore
-    apiKey = import.meta.env.API_KEY;
+    if (!apiKey && typeof import.meta !== 'undefined' && import.meta.env) {
+      // @ts-ignore
+      apiKey = import.meta.env.API_KEY;
+    }
+  } catch (e) {
+    // Ignore errors accessing import.meta
   }
   
   if (apiKey) {

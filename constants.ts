@@ -1,6 +1,6 @@
 import { CourseCategory } from './types';
 
-export const APP_VERSION = '2.0.008';
+export const APP_VERSION = '2.0.010';
 
 // Note: Static image lists have been removed in version 2.0.004.
 // Thumbnails are now dynamically generated SVGs in courseDataService.ts 
