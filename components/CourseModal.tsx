@@ -8,37 +8,6 @@ interface CourseModalProps {
   onClose: () => void;
 }
 
-const getVimeoEmbedUrl = (link: string): string | null => {
-  try {
-    // Regex for Vimeo URLs: https://vimeo.com/123456789/abcdef123 or https://vimeo.com/123456789
-    const regex = /vimeo\.com\/(\d+)(?:\/([a-zA-Z0-9]+))?/;
-    const match = link.match(regex);
-    
-    if (match) {
-      const videoId = match[1];
-      const hash = match[2];
-      
-      let embedUrl = `https://player.vimeo.com/video/${videoId}`;
-      const params = new URLSearchParams({
-        title: '0',
-        byline: '0',
-        portrait: '0',
-        autoplay: '1',
-        dnt: '1'
-      });
-      
-      if (hash) {
-        params.append('h', hash);
-      }
-      
-      return `${embedUrl}?${params.toString()}`;
-    }
-    return null;
-  } catch (e) {
-    return null;
-  }
-};
-
 const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, onClose }) => {
   const [activeVideo, setActiveVideo] = useState<CourseVideo | null>(null);
 
@@ -53,7 +22,7 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
 
   if (!course) return null;
 
-  const embedUrl = activeVideo ? getVimeoEmbedUrl(activeVideo.link) : null;
+  // Direct link usage without modification as requested
   const currentExternalLink = activeVideo ? activeVideo.link : course.link;
 
   return (
@@ -86,10 +55,10 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
             <X size={20} />
           </button>
 
-          {activeVideo && embedUrl ? (
+          {activeVideo ? (
             <div className="absolute inset-0 z-10">
               <iframe 
-                src={embedUrl} 
+                src={activeVideo.link} 
                 className="w-full h-full" 
                 frameBorder="0" 
                 allow="autoplay; fullscreen; picture-in-picture" 

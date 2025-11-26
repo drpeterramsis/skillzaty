@@ -3,7 +3,6 @@ import { Search, Filter, BookOpen, Layers, Clock, XCircle, PlayCircle, Loader2, 
 import { CourseCategory, Course, FilterState } from './types';
 import CourseCard from './components/CourseCard';
 import CourseModal from './components/CourseModal';
-import AIChat from './components/AIChat';
 import { fetchCoursesFromSupabase } from './services/courseDataService';
 import { supabase } from './services/supabaseClient';
 import { APP_VERSION } from './constants';
@@ -337,14 +336,16 @@ const App: React.FC = () => {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Mail className="h-5 w-5 text-slate-400" />
                     </div>
+                    {/* Changed type to password as requested to mask the email */}
                     <input
-                    type="email"
+                    type="password"
                     id="email"
                     required
                     className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                     placeholder="name@example.com"
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
+                    autoComplete="email"
                     />
                 </div>
                 </div>
@@ -354,7 +355,7 @@ const App: React.FC = () => {
                 disabled={loginLoading}
                 className="w-full flex justify-center items-center gap-2 bg-indigo-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                 >
-                {loginLoading ? <Loader2 size={20} className="animate-spin" /> : <>Access Dashboard <ArrowRight size={18} /></>}
+                {loginLoading ? <Loader2 size={20} className="animate-spin" /> : <>Access Skill-Zaty <ArrowRight size={18} /></>}
                 </button>
             </form>
 
@@ -369,7 +370,7 @@ const App: React.FC = () => {
             )}
             
             <p className="mt-6 text-center text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
-                Enter your authorized email to access the dashboard. No password required.
+                Enter your authorized email to access. No password required.
             </p>
             </div>
         )}
@@ -747,15 +748,13 @@ const App: React.FC = () => {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-20 right-6 z-30 bg-white text-slate-600 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-indigo-600 hover:text-white transition-all duration-300 transform hover:scale-110 group"
+          // Adjusted position since chatbot is removed
+          className="fixed bottom-8 right-6 z-30 bg-white text-slate-600 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-indigo-600 hover:text-white transition-all duration-300 transform hover:scale-110 group"
           aria-label="Scroll to top"
         >
           <ArrowUp size={20} className="group-hover:-translate-y-1 transition-transform" />
         </button>
       )}
-
-      {/* AI Chat Bot */}
-      <AIChat courses={courses} />
 
       {/* Fixed Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-4 z-40">
