@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Filter, BookOpen, Layers, Clock, XCircle, PlayCircle, Loader2, AlertCircle, Database, Copy, Check, RefreshCw, ArrowUp } from 'lucide-react';
+import { Search, Filter, BookOpen, Layers, Clock, XCircle, PlayCircle, Loader2, AlertCircle, Database, Copy, Check, RefreshCw, ArrowUp, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 import { CourseCategory, Course, FilterState } from './types';
 import CourseCard from './components/CourseCard';
 import CourseModal from './components/CourseModal';
@@ -45,6 +45,7 @@ const App: React.FC = () => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [initialVideoIndex, setInitialVideoIndex] = useState<number | null>(null);
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -195,7 +196,7 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500 font-inter">
         <Loader2 size={48} className="animate-spin text-indigo-600 mb-4" />
         <h2 className="text-lg font-semibold text-slate-700">Loading SkillZaty Database...</h2>
         <p className="text-sm">Fetching courses from Supabase</p>
@@ -206,7 +207,7 @@ const App: React.FC = () => {
   if (error) {
     const isTableError = error === 'TABLE_NOT_FOUND';
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500 p-4">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500 p-4 font-inter">
         <AlertCircle size={48} className="text-red-500 mb-4" />
         <h2 className="text-lg font-semibold text-slate-800">Connection Error</h2>
         <p className="text-sm max-w-md text-center mb-6 text-slate-600">
@@ -263,47 +264,58 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-slate-50 text-slate-900 font-inter flex flex-col relative">
       
       {/* Navbar */}
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-sm flex-none">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="bg-indigo-600 p-1.5 rounded-lg">
-              <Layers className="text-white" size={24} />
+      <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,0.05)] flex-none">
+        <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* Desktop Sidebar Toggle */}
+            <button 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="hidden md:flex p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+              title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+            >
+              {isSidebarOpen ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
+            </button>
+
+            <div className="flex items-center space-x-2">
+              <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-1.5 rounded-lg shadow-sm">
+                <Layers className="text-white" size={20} />
+              </div>
+              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 to-violet-700 tracking-tight">
+                SkillZaty
+              </h1>
             </div>
-            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">
-              SkillZaty
-            </h1>
           </div>
           
-          <div className="hidden md:flex items-center flex-1 max-w-lg mx-8">
+          <div className="hidden md:flex items-center flex-1 max-w-2xl mx-8">
             <div className="relative w-full group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm"
-                placeholder="Search courses, video topics..."
+                className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all text-sm font-medium text-slate-700"
+                placeholder="Search courses, video topics, or lecturers..."
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({...prev, search: e.target.value}))}
               />
             </div>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
              <button 
-                className="md:hidden p-2 text-slate-500 hover:text-indigo-600"
+                className="md:hidden p-2 text-slate-500 hover:text-indigo-600 hover:bg-slate-100 rounded-lg"
                 onClick={() => setShowFiltersMobile(!showFiltersMobile)}
              >
                <Filter size={24} />
              </button>
-             <div className="hidden md:flex items-center text-xs font-medium bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
-                <span className="text-slate-600">{filteredCourses.length} Courses Found</span>
+             <div className="hidden md:flex items-center text-xs font-semibold bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100 text-indigo-700">
+                <span className="mr-1">{filteredCourses.length}</span> Courses
                 {filters.search && totalMatchingVideos > 0 && (
                    <>
-                     <span className="mx-2 text-slate-300">|</span>
-                     <span className="text-indigo-600 flex items-center">
+                     <span className="mx-2 text-indigo-300">|</span>
+                     <span className="flex items-center">
                        <PlayCircle size={12} className="mr-1" />
-                       {totalMatchingVideos} Matching Videos
+                       {totalMatchingVideos} Videos
                      </span>
                    </>
                 )}
@@ -312,7 +324,7 @@ const App: React.FC = () => {
         </div>
         
         {/* Mobile Search - Visible only on small screens */}
-        <div className="md:hidden px-4 pb-4">
+        <div className="md:hidden px-4 pb-4 border-t border-slate-100 pt-3">
              <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-slate-400" />
@@ -335,110 +347,165 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full pb-24">
-        <div className="flex flex-col md:flex-row gap-8">
-          
-          {/* Sidebar Filters - Sticky and Independently Scrollable */}
-          <aside className={`md:w-64 flex-shrink-0 ${showFiltersMobile ? 'block' : 'hidden md:block'}`}>
-            <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 no-scrollbar">
-              <div className="space-y-8 pb-4">
-                
-                {/* Reset Button (Mobile) */}
-                <div className="flex justify-between items-center md:hidden mb-4">
-                  <h2 className="font-bold text-lg">Filters</h2>
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar Filters - Desktop Collapsible & Mobile Overlay */}
+        <aside 
+            className={`
+                fixed inset-y-0 left-0 z-30 bg-white border-r border-slate-200 transform transition-all duration-300 ease-in-out
+                md:relative md:transform-none md:z-auto
+                ${showFiltersMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'}
+                ${isSidebarOpen ? 'md:w-72' : 'md:w-0 md:opacity-0 md:overflow-hidden'}
+                w-72
+            `}
+        >
+          <div className={`h-full overflow-y-auto p-5 no-scrollbar ${isSidebarOpen ? 'opacity-100' : 'md:opacity-0'} transition-opacity duration-200`}>
+            
+            {/* Mobile Header */}
+            <div className="flex justify-between items-center md:hidden mb-6">
+                <h2 className="font-bold text-lg text-slate-900">Filters</h2>
+                <button 
+                onClick={() => setShowFiltersMobile(false)}
+                className="p-1 text-slate-400 hover:text-slate-600"
+                >
+                <XCircle size={24} />
+                </button>
+            </div>
+
+            {/* Desktop Filter Header (Only when open) */}
+            <div className="hidden md:flex justify-between items-center mb-6">
+                <h2 className="font-bold text-sm text-slate-500 uppercase tracking-wider">Refine Results</h2>
+                {(filters.categories.length > 0 || filters.sources.length > 0 || filters.durationRange !== null) && (
                   <button 
                     onClick={resetFilters}
-                    className="text-xs text-indigo-600 font-semibold"
+                    className="text-[10px] text-indigo-600 font-bold hover:underline"
                   >
-                    Reset All
+                    RESET
                   </button>
-                </div>
+                )}
+            </div>
 
+            <div className="space-y-8 pb-10">
                 {/* Categories */}
                 {availableCategories.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center">
-                      <BookOpen size={14} className="mr-2 text-indigo-500" /> Category
+                <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center">
+                      <BookOpen size={16} className="mr-2 text-indigo-500" /> Category
                     </h3>
-                    <div className="space-y-2">
-                      {availableCategories.map(cat => (
-                        <label key={cat} className="flex items-center space-x-2 cursor-pointer group">
-                          <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0 ${filters.categories.includes(cat) ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300 bg-white group-hover:border-indigo-400'}`}>
-                            {filters.categories.includes(cat) && <span className="text-white text-xs">✓</span>}
-                          </div>
-                          <input 
+                    <div className="space-y-2.5">
+                    {availableCategories.map(cat => (
+                        <label key={cat} className="flex items-center space-x-3 cursor-pointer group select-none">
+                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all flex-shrink-0 ${filters.categories.includes(cat) ? 'bg-indigo-600 border-indigo-600 shadow-sm' : 'border-slate-300 bg-white group-hover:border-indigo-400'}`}>
+                            {filters.categories.includes(cat) && <Check size={10} className="text-white" />}
+                        </div>
+                        <input 
                             type="checkbox" 
                             className="hidden"
                             checked={filters.categories.includes(cat)} 
                             onChange={() => toggleCategory(cat)}
-                          />
-                          <span className={`text-sm ${filters.categories.includes(cat) ? 'text-indigo-700 font-medium' : 'text-slate-600 group-hover:text-slate-900'}`}>{cat}</span>
+                        />
+                        <span className={`text-sm ${filters.categories.includes(cat) ? 'text-indigo-700 font-semibold' : 'text-slate-600 group-hover:text-slate-900'}`}>{cat}</span>
                         </label>
-                      ))}
+                    ))}
                     </div>
-                  </div>
+                </div>
                 )}
 
                 {/* Source */}
                 {availableSources.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center">
-                      <Layers size={14} className="mr-2 text-indigo-500" /> Platform
+                <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center">
+                      <Layers size={16} className="mr-2 text-indigo-500" /> Platform
                     </h3>
-                    <div className="space-y-2">
-                      {availableSources.map(source => (
-                        <label key={source} className="flex items-center space-x-2 cursor-pointer group">
-                          <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0 ${filters.sources.includes(source) ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300 bg-white group-hover:border-indigo-400'}`}>
-                            {filters.sources.includes(source) && <span className="text-white text-xs">✓</span>}
-                          </div>
-                          <input 
+                    <div className="space-y-2.5">
+                    {availableSources.map(source => (
+                        <label key={source} className="flex items-center space-x-3 cursor-pointer group select-none">
+                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all flex-shrink-0 ${filters.sources.includes(source) ? 'bg-indigo-600 border-indigo-600 shadow-sm' : 'border-slate-300 bg-white group-hover:border-indigo-400'}`}>
+                            {filters.sources.includes(source) && <Check size={10} className="text-white" />}
+                        </div>
+                        <input 
                             type="checkbox" 
                             className="hidden"
                             checked={filters.sources.includes(source)} 
                             onChange={() => toggleSource(source)}
-                          />
-                          <span className={`text-sm ${filters.sources.includes(source) ? 'text-indigo-700 font-medium' : 'text-slate-600 group-hover:text-slate-900'}`}>{source}</span>
+                        />
+                        <span className={`text-sm ${filters.sources.includes(source) ? 'text-indigo-700 font-semibold' : 'text-slate-600 group-hover:text-slate-900'}`}>{source}</span>
                         </label>
-                      ))}
+                    ))}
                     </div>
-                  </div>
+                </div>
                 )}
 
                 {/* Duration */}
                 <div>
-                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center">
-                      <Clock size={14} className="mr-2 text-indigo-500" /> Duration
+                    <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center">
+                      <Clock size={16} className="mr-2 text-indigo-500" /> Duration
                     </h3>
                     <div className="flex flex-col gap-2">
-                      {DURATION_RANGES.map(range => (
+                    {DURATION_RANGES.map(range => (
                         <button 
-                          key={range.key}
-                          onClick={() => setFilters(prev => ({...prev, durationRange: prev.durationRange === range.key ? null : range.key}))}
-                          className={`px-3 py-2 rounded-lg text-sm text-left transition-colors border ${filters.durationRange === range.key ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-medium' : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300'}`}
+                        key={range.key}
+                        onClick={() => setFilters(prev => ({...prev, durationRange: prev.durationRange === range.key ? null : range.key}))}
+                        className={`px-3 py-2 rounded-lg text-sm text-left transition-all border ${filters.durationRange === range.key ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-bold shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:bg-slate-50'}`}
                         >
-                          {range.label}
+                          <div className="flex justify-between items-center">
+                            {range.label}
+                            {filters.durationRange === range.key && <Check size={14} />}
+                          </div>
                         </button>
-                      ))}
+                    ))}
                     </div>
-                  </div>
+                </div>
 
-                {/* Clear Filters Button (Desktop) */}
-                {(filters.categories.length > 0 || filters.sources.length > 0 || filters.durationRange !== null || filters.search) && (
+                {/* Mobile Reset */}
+                <div className="md:hidden pt-4 border-t border-slate-100">
                   <button 
                     onClick={resetFilters}
-                    className="hidden md:flex items-center text-sm text-red-500 hover:text-red-700 font-medium"
+                    className="w-full py-2 text-center text-sm text-red-500 font-medium border border-red-200 rounded-lg hover:bg-red-50"
                   >
-                    <XCircle size={16} className="mr-1.5" /> Clear all filters
+                    Clear All Filters
                   </button>
-                )}
-              </div>
+                </div>
             </div>
-          </aside>
+          </div>
+        </aside>
 
-          {/* Main Grid */}
-          <div className="flex-1">
+        {/* Overlay for mobile sidebar */}
+        {showFiltersMobile && (
+          <div 
+            className="fixed inset-0 z-20 bg-slate-900/50 backdrop-blur-sm md:hidden"
+            onClick={() => setShowFiltersMobile(false)}
+          />
+        )}
+
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto bg-slate-50/50">
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full pb-24">
+            
+            {/* Active Filters Display (if sidebar closed or general visibility) */}
+            {(!isSidebarOpen || true) && (filters.categories.length > 0 || filters.sources.length > 0 || filters.durationRange) && (
+              <div className="mb-6 flex flex-wrap gap-2 items-center">
+                 <span className="text-xs font-semibold text-slate-400 mr-2 uppercase tracking-wide">Active Filters:</span>
+                 {filters.categories.map(c => (
+                   <button key={c} onClick={() => toggleCategory(c)} className="flex items-center gap-1 px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-indigo-600 hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-colors shadow-sm">
+                     {c} <X size={12} />
+                   </button>
+                 ))}
+                 {filters.sources.map(s => (
+                   <button key={s} onClick={() => toggleSource(s)} className="flex items-center gap-1 px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-blue-600 hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-colors shadow-sm">
+                     {s} <X size={12} />
+                   </button>
+                 ))}
+                 {filters.durationRange && (
+                   <button onClick={() => setFilters(prev => ({...prev, durationRange: null}))} className="flex items-center gap-1 px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-emerald-600 hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-colors shadow-sm">
+                     {DURATION_RANGES.find(r => r.key === filters.durationRange)?.label} <X size={12} />
+                   </button>
+                 )}
+                 <button onClick={resetFilters} className="text-xs text-slate-500 hover:text-red-600 underline ml-2">Clear all</button>
+              </div>
+            )}
+
             {filteredCourses.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className={`grid grid-cols-1 sm:grid-cols-2 ${isSidebarOpen ? 'lg:grid-cols-3 xl:grid-cols-3' : 'lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
                 {filteredCourses.map(course => (
                   <CourseCard 
                     key={course.id} 
@@ -449,42 +516,46 @@ const App: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-                <Search size={48} className="mb-4 text-slate-200" />
-                <h3 className="text-lg font-medium text-slate-600">No courses found</h3>
-                <p>Try adjusting your filters or search terms.</p>
+              <div className="flex flex-col items-center justify-center py-24 text-slate-400">
+                <div className="bg-white p-6 rounded-full shadow-sm mb-4">
+                  <Search size={40} className="text-indigo-200" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-700 mb-2">No courses found</h3>
+                <p className="text-sm text-slate-500 max-w-xs text-center">We couldn't find any courses matching your specific criteria.</p>
                 <button 
                   onClick={resetFilters}
-                  className="mt-4 text-indigo-600 font-semibold hover:underline"
+                  className="mt-6 px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
                 >
                   Clear all filters
                 </button>
               </div>
             )}
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
 
       {/* Scroll to Top Button */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-36 right-6 z-30 bg-white text-slate-500 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-300 transform hover:scale-110"
+          className="fixed bottom-20 right-6 z-30 bg-white text-slate-600 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-indigo-600 hover:text-white transition-all duration-300 transform hover:scale-110 group"
           aria-label="Scroll to top"
         >
-          <ArrowUp size={20} />
+          <ArrowUp size={20} className="group-hover:-translate-y-1 transition-transform" />
         </button>
       )}
 
       {/* Fixed Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-slate-200 py-2 shadow-[0_-1px_2px_rgba(0,0,0,0.03)] h-12 flex items-center">
+      <footer className="bg-white border-t border-slate-200 py-4 z-40">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between text-xs text-slate-500">
            <div className="flex items-center gap-2">
-             <Layers size={14} className="text-indigo-600" />
+             <div className="bg-slate-100 p-1 rounded">
+               <Layers size={12} className="text-indigo-600" />
+             </div>
              <span className="font-semibold text-slate-700">SkillZaty</span>
              <span>© 2025</span>
            </div>
-           <p className="font-mono text-[10px] text-slate-400">v{APP_VERSION}</p>
+           <p className="font-mono text-[10px] text-slate-400 bg-slate-50 px-2 py-1 rounded">v{APP_VERSION}</p>
         </div>
       </footer>
 

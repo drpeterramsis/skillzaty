@@ -59,10 +59,10 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-4 overflow-hidden">
       <div 
-        className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" 
+        className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity" 
         onClick={onClose}
       />
-      <div className="relative bg-white md:rounded-2xl shadow-2xl w-full max-w-4xl h-full md:h-[90vh] flex flex-col overflow-hidden animate-fade-in-up">
+      <div className="relative bg-white md:rounded-2xl shadow-2xl w-full max-w-5xl h-full md:h-[92vh] flex flex-col overflow-hidden animate-fade-in-up border border-slate-700/50">
         
         {/* Player / Header Section */}
         <div className="flex-shrink-0 bg-black relative w-full aspect-video md:aspect-[21/9] lg:aspect-video max-h-[50vh] group/player">
@@ -81,7 +81,7 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
 
           <button 
             onClick={onClose}
-            className="absolute top-4 right-4 z-30 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors backdrop-blur-md"
+            className="absolute top-4 right-4 z-30 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors backdrop-blur-md border border-white/10"
           >
             <X size={20} />
           </button>
@@ -105,15 +105,12 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
                 alt={course.name} 
                 className="w-full h-full object-cover"
               />
-              
-              {/* Note: We removed the text overlay here because the generated SVG thumbnail now already contains the Course Name. 
-                  However, we still keep a gradient for the play button visibility */}
               <div className="absolute inset-0 bg-black/10" />
 
               {/* Play Button Overlay */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-xl border border-white/30">
-                  <PlayCircle size={32} className="text-white" />
+                <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-xl border border-white/30">
+                  <PlayCircle size={40} className="text-white" />
                 </div>
               </div>
             </>
@@ -125,43 +122,43 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
           <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Left Column: Details */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Header Info (Visible now since removed from hero image) */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Header Info */}
               <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="inline-block px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="inline-block px-3 py-1 rounded-sm bg-indigo-100 text-indigo-800 text-xs font-bold tracking-wider uppercase shadow-sm">
                         {course.category}
                     </span>
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900 leading-tight mb-2">
+                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight mb-3">
                     {course.name}
                   </h2>
-                  <div className="flex items-center text-slate-500 text-sm font-medium">
-                    <User size={16} className="mr-2" />
+                  <div className="flex items-center text-slate-600 text-sm font-medium">
+                    <User size={16} className="mr-2 text-indigo-600" />
                     {course.lecturer}
                   </div>
               </div>
 
               {/* Stats Bar */}
               <div className="flex flex-wrap gap-3 text-sm text-slate-700">
-                <div className="flex items-center bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
-                  <Clock size={16} className="mr-2 text-indigo-500" />
-                  <span>{course.duration}</span>
+                <div className="flex items-center bg-white px-4 py-2.5 rounded-lg border border-slate-200 shadow-sm">
+                  <Clock size={16} className="mr-2.5 text-indigo-500" />
+                  <span className="font-medium">{course.duration}</span>
                 </div>
-                <div className="flex items-center bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
-                  <PlayCircle size={16} className="mr-2 text-indigo-500" />
-                  <span>{course.videoCount} Lessons</span>
+                <div className="flex items-center bg-white px-4 py-2.5 rounded-lg border border-slate-200 shadow-sm">
+                  <PlayCircle size={16} className="mr-2.5 text-indigo-500" />
+                  <span className="font-medium">{course.videoCount} Lessons</span>
                 </div>
-                <div className="flex items-center bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
-                  <BookOpen size={16} className="mr-2 text-indigo-500" />
-                  <span>{course.source}</span>
+                <div className="flex items-center bg-white px-4 py-2.5 rounded-lg border border-slate-200 shadow-sm">
+                  <BookOpen size={16} className="mr-2.5 text-indigo-500" />
+                  <span className="font-medium">{course.source}</span>
                 </div>
               </div>
 
               {/* Description */}
               <div>
                 <h3 className="text-lg font-bold text-slate-900 mb-3">About this Course</h3>
-                <p className="text-slate-600 leading-relaxed text-base">
+                <p className="text-slate-700 leading-relaxed text-base font-normal">
                   {course.description}
                 </p>
               </div>
@@ -176,7 +173,7 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
                   {course.topics.map((topic, index) => (
                     <span 
                       key={index}
-                      className="px-3 py-1 bg-white text-slate-600 rounded-full text-xs font-medium border border-slate-200 shadow-sm"
+                      className="px-3 py-1.5 bg-white text-slate-700 rounded-lg text-sm font-medium border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors"
                     >
                       {topic}
                     </span>
@@ -187,8 +184,8 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
 
             {/* Right Column: Playlist */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-0">
-                <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-0 flex flex-col max-h-[600px]">
+                <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
                   <h3 className="font-bold text-slate-900 flex items-center">
                     <ListVideo size={18} className="mr-2 text-indigo-600" />
                     Course Content
@@ -197,7 +194,7 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
                     {course.videoCount}
                   </span>
                 </div>
-                <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto">
+                <div className="divide-y divide-slate-100 overflow-y-auto">
                   {course.videos && course.videos.map((video, index) => {
                     const isActive = activeVideo?.link === video.link;
                     return (
@@ -207,16 +204,18 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
                       >
                         <button 
                           onClick={() => setActiveVideo(video)}
-                          className="flex-1 text-left p-4 flex items-start gap-3 hover:bg-indigo-50/50 transition-colors"
+                          className="flex-1 text-left p-3.5 flex items-start gap-3 hover:bg-indigo-50/50 transition-colors"
                         >
                           <div className={`mt-0.5 flex-shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-400'}`}>
                             {isActive ? <PauseCircle size={20} /> : <PlayCircle size={20} />}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-semibold mb-1 truncate ${isActive ? 'text-indigo-700' : 'text-slate-700'}`}>
-                              {index + 1}. {video.title}
+                            {/* Changed from truncate to break-words for wrapping */}
+                            <p className={`text-sm font-medium mb-1 leading-snug break-words ${isActive ? 'text-indigo-700' : 'text-slate-800'}`}>
+                              <span className="text-slate-400 font-normal text-xs mr-1">#{index + 1}</span>
+                              {video.title}
                             </p>
-                            <p className="text-xs text-slate-500 flex items-center">
+                            <p className="text-xs text-slate-500 flex items-center mt-1">
                               {video.duration}
                               {isActive && <span className="ml-2 text-indigo-600 font-bold text-[10px] uppercase tracking-wider">Playing</span>}
                             </p>
@@ -228,10 +227,10 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
                           href={video.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center px-4 text-slate-300 hover:text-indigo-600 hover:bg-indigo-100/50 transition-colors border-l border-transparent hover:border-indigo-100"
+                          className="flex items-center px-3 text-slate-300 hover:text-indigo-600 hover:bg-indigo-100/50 transition-colors border-l border-transparent hover:border-indigo-100"
                           title="Open in new tab"
                         >
-                          <ExternalLink size={18} />
+                          <ExternalLink size={16} />
                         </a>
                       </div>
                     );
