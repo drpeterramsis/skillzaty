@@ -22,16 +22,19 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, searchQuery, onClick })
       onClick={() => onClick(course)}
       className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden cursor-pointer flex flex-col h-full relative"
     >
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-48 overflow-hidden bg-slate-100">
         <img 
           src={course.thumbnail} 
           alt={course.name} 
           className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
         />
-        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-indigo-600 shadow-sm">
+        {/* Source Badge */}
+        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-indigo-600 shadow-sm border border-white/20">
           {course.source}
         </div>
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+        {/* Hover overlay - Subtle now since thumbnails are colorful */}
+        <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300" />
       </div>
 
       <div className="p-5 flex-1 flex flex-col">
@@ -45,7 +48,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, searchQuery, onClick })
           </div>
         </div>
 
-        <h3 className="text-lg font-bold text-slate-800 leading-tight mb-2 group-hover:text-indigo-600 transition-colors">
+        <h3 className="text-lg font-bold text-slate-800 leading-tight mb-2 group-hover:text-indigo-600 transition-colors line-clamp-2">
           {course.name}
         </h3>
 

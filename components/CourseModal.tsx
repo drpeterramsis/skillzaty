@@ -99,29 +99,21 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
             </div>
           ) : (
             <>
+              {/* If no video playing, show the generated thumbnail */}
               <img 
                 src={course.thumbnail} 
                 alt={course.name} 
-                className="w-full h-full object-cover opacity-60"
+                className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                <span className="inline-block px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-bold mb-3 shadow-lg">
-                  {course.category}
-                </span>
-                <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-2 text-shadow">
-                  {course.name}
-                </h2>
-                <div className="flex items-center text-slate-200 text-sm font-medium">
-                  <User size={16} className="mr-2" />
-                  {course.lecturer}
-                </div>
-              </div>
               
+              {/* Note: We removed the text overlay here because the generated SVG thumbnail now already contains the Course Name. 
+                  However, we still keep a gradient for the play button visibility */}
+              <div className="absolute inset-0 bg-black/10" />
+
               {/* Play Button Overlay */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-xl">
-                  <PlayCircle size={32} className="text-white fill-white/20" />
+                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-xl border border-white/30">
+                  <PlayCircle size={32} className="text-white" />
                 </div>
               </div>
             </>
@@ -134,6 +126,22 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
             
             {/* Left Column: Details */}
             <div className="lg:col-span-2 space-y-8">
+              {/* Header Info (Visible now since removed from hero image) */}
+              <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="inline-block px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold shadow-sm">
+                        {course.category}
+                    </span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-900 leading-tight mb-2">
+                    {course.name}
+                  </h2>
+                  <div className="flex items-center text-slate-500 text-sm font-medium">
+                    <User size={16} className="mr-2" />
+                    {course.lecturer}
+                  </div>
+              </div>
+
               {/* Stats Bar */}
               <div className="flex flex-wrap gap-3 text-sm text-slate-700">
                 <div className="flex items-center bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">

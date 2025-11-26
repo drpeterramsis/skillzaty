@@ -59,7 +59,7 @@ const AIChat: React.FC<AIChatProps> = ({ courses }) => {
   };
 
   return (
-    <div className="fixed bottom-14 right-6 z-40 flex flex-col items-end">
+    <div className="fixed bottom-20 right-6 z-[60] flex flex-col items-end">
       {/* Chat Window */}
       {isOpen && (
         <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-80 sm:w-96 h-[500px] mb-4 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-300">

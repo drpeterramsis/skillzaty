@@ -47,7 +47,7 @@ const App: React.FC = () => {
   // Handle Scroll to Top Visibility
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
+      setShowScrollTop(window.scrollY > 300);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -479,7 +479,7 @@ const App: React.FC = () => {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-28 right-6 z-30 bg-white text-slate-500 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-300 transform hover:scale-110"
+          className="fixed bottom-36 right-6 z-30 bg-white text-slate-500 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-300 transform hover:scale-110"
           aria-label="Scroll to top"
         >
           <ArrowUp size={20} />
@@ -487,8 +487,8 @@ const App: React.FC = () => {
       )}
 
       {/* Fixed Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-slate-200 py-2.5 shadow-[0_-1px_2px_rgba(0,0,0,0.03)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between text-xs text-slate-500">
+      <footer className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-slate-200 py-2 shadow-[0_-1px_2px_rgba(0,0,0,0.03)] h-12 flex items-center">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between text-xs text-slate-500">
            <div className="flex items-center gap-2">
              <Layers size={14} className="text-indigo-600" />
              <span className="font-semibold text-slate-700">SkillZaty</span>
