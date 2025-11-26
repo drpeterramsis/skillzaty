@@ -29,6 +29,20 @@ const CATEGORY_STYLES: Record<string, { colors: [string, string], icon: string }
 
 const FALLBACK_STYLE = { colors: ['#64748b', '#475569'], icon: ICONS.BRIEFCASE } as const;
 
+// Helper to escape XML special characters to prevent broken SVGs
+const escapeXml = (unsafe: string): string => {
+  return unsafe.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  });
+};
+
 /**
  * Generates an SVG Data URI containing the course icon and name.
  * Layout: Icon centered top, Name centered bottom (up to 2 lines).
@@ -52,12 +66,17 @@ const generateCourseThumbnail = (category: string, courseName: string): string =
         line2 += (line2 ? ' ' : '') + word;
       }
     }
+    
     // Truncate line 2 if too long
-    if (line2.length > 30) line2 = line2.substring(0, 27) + '...';
+    // Use Array.from to correctly handle surrogate pairs (emojis) during truncation
+    const line2Chars = Array.from(line2);
+    if (line2Chars.length > 30) {
+      line2 = line2Chars.slice(0, 27).join('') + '...';
+    }
 
-    // Sanitize text to avoid breaking XML
-    const safeLine1 = line1.replace(/[<>&'"]/g, '');
-    const safeLine2 = line2.replace(/[<>&'"]/g, '');
+    // Sanitize text to avoid breaking XML structure
+    const safeLine1 = escapeXml(line1);
+    const safeLine2 = escapeXml(line2);
 
     const svg = `
       <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
@@ -93,9 +112,12 @@ const generateCourseThumbnail = (category: string, courseName: string): string =
       </svg>
     `.trim();
 
-    // Encode SVG to Base64 safely handling Unicode characters
-    // The standard btoa() fails with Unicode strings. We use unescape(encodeURIComponent()) as a polyfill.
-    const encoded = window.btoa(unescape(encodeURIComponent(svg)));
+    // Robust Unicode-safe Base64 Encoding
+    // We use TextEncoder to convert UTF-16 string to UTF-8 bytes, then convert bytes to string, then btoa.
+    const utf8Bytes = new TextEncoder().encode(svg);
+    const binaryString = Array.from(utf8Bytes, (byte) => String.fromCharCode(byte)).join('');
+    const encoded = window.btoa(binaryString);
+    
     return `data:image/svg+xml;base64,${encoded}`;
   } catch (error) {
     console.warn("Failed to generate thumbnail for", courseName, error);
