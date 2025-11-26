@@ -3,7 +3,6 @@ import { Search, Filter, BookOpen, Layers, Clock, XCircle, PlayCircle, Loader2, 
 import { CourseCategory, Course, FilterState } from './types';
 import CourseCard from './components/CourseCard';
 import CourseModal from './components/CourseModal';
-import AIChat from './components/AIChat';
 import { fetchCoursesFromSupabase } from './services/courseDataService';
 import { APP_VERSION } from './constants';
 
@@ -97,7 +96,7 @@ const App: React.FC = () => {
 
   // Derived Available Options for Sidebar
   const availableCategories = useMemo(() => {
-    const cats = new Set<CourseCategory>();
+    const cats = new Set<string>();
     courses.forEach(c => cats.add(c.category));
     return Array.from(cats).sort();
   }, [courses]);
@@ -164,7 +163,7 @@ const App: React.FC = () => {
     setInitialVideoIndex(videoIndex ?? null);
   };
 
-  const toggleCategory = (cat: CourseCategory) => {
+  const toggleCategory = (cat: string) => {
     setFilters(prev => ({
       ...prev,
       categories: prev.categories.includes(cat)
@@ -511,7 +510,6 @@ const App: React.FC = () => {
         }} 
       />
       
-      <AIChat courses={courses} />
     </div>
   );
 };

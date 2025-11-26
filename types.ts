@@ -7,7 +7,7 @@ export interface CourseVideo {
 export interface Course {
   id: string;
   name: string;
-  category: CourseCategory;
+  category: string; // Changed to string to support dynamic DB categories
   source: string;
   lecturer: string;
   duration: string; // Display string e.g., "5h 30m"
@@ -21,6 +21,7 @@ export interface Course {
   rating: number;
 }
 
+// Keeping enum for color/icon mapping reference, though the app now accepts any string
 export enum CourseCategory {
   SALES_MANAGEMENT = 'Sales Management',
   MANAGEMENT_LEADERSHIP = 'Management & Leadership',
@@ -34,7 +35,7 @@ export enum CourseCategory {
 
 export interface FilterState {
   search: string;
-  categories: CourseCategory[];
+  categories: string[];
   sources: string[];
   maxDuration: number | null; // minutes
 }

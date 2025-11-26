@@ -17,17 +17,22 @@ const ICONS = {
 
 // Style Configuration for Categories (Colors + Icons)
 const CATEGORY_STYLES: Record<string, { colors: [string, string], icon: string }> = {
-  [CourseCategory.SALES_MANAGEMENT]: { colors: ['#ea580c', '#dc2626'], icon: ICONS.CHART }, // Orange -> Red
-  [CourseCategory.MANAGEMENT_LEADERSHIP]: { colors: ['#4f46e5', '#3730a3'], icon: ICONS.USERS }, // Indigo
-  [CourseCategory.DEVELOPMENT]: { colors: ['#0f172a', '#334155'], icon: ICONS.CODE }, // Slate
-  [CourseCategory.DESIGN]: { colors: ['#db2777', '#be185d'], icon: ICONS.PALETTE }, // Pink
-  [CourseCategory.BUSINESS]: { colors: ['#2563eb', '#1e40af'], icon: ICONS.BRIEFCASE }, // Blue
-  [CourseCategory.DATA_SCIENCE]: { colors: ['#0d9488', '#115e59'], icon: ICONS.DATABASE }, // Teal
-  [CourseCategory.MARKETING]: { colors: ['#ca8a04', '#eab308'], icon: ICONS.MEGAPHONE }, // Yellow
-  [CourseCategory.PHOTOGRAPHY]: { colors: ['#57534e', '#292524'], icon: ICONS.CAMERA }, // Stone
+  'Sales': { colors: ['#ea580c', '#dc2626'], icon: ICONS.CHART },
+  'Management': { colors: ['#4f46e5', '#3730a3'], icon: ICONS.USERS },
+  'Leadership': { colors: ['#4f46e5', '#3730a3'], icon: ICONS.USERS },
+  'Development': { colors: ['#0f172a', '#334155'], icon: ICONS.CODE },
+  'Code': { colors: ['#0f172a', '#334155'], icon: ICONS.CODE },
+  'Design': { colors: ['#db2777', '#be185d'], icon: ICONS.PALETTE },
+  'Art': { colors: ['#db2777', '#be185d'], icon: ICONS.PALETTE },
+  'Business': { colors: ['#2563eb', '#1e40af'], icon: ICONS.BRIEFCASE },
+  'Finance': { colors: ['#2563eb', '#1e40af'], icon: ICONS.BRIEFCASE },
+  'Data': { colors: ['#0d9488', '#115e59'], icon: ICONS.DATABASE },
+  'Marketing': { colors: ['#ca8a04', '#eab308'], icon: ICONS.MEGAPHONE },
+  'Photography': { colors: ['#57534e', '#292524'], icon: ICONS.CAMERA },
+  'Video': { colors: ['#57534e', '#292524'], icon: ICONS.CAMERA },
 };
 
-const FALLBACK_STYLE = { colors: ['#64748b', '#475569'], icon: ICONS.BRIEFCASE } as const;
+const FALLBACK_STYLE = { colors: ['#64748b', '#475569'], icon: ICONS.BRIEFCASE };
 
 // Helper to escape XML special characters to prevent broken SVGs
 const escapeXml = (unsafe: string): string => {
@@ -44,14 +49,24 @@ const escapeXml = (unsafe: string): string => {
 };
 
 /**
+ * Determines the style for a course based on its category name by checking for keywords.
+ */
+const getStyleForCategory = (category: string) => {
+  const catLower = category.toLowerCase();
+  const matchedKey = Object.keys(CATEGORY_STYLES).find(key => 
+    catLower.includes(key.toLowerCase())
+  );
+  return matchedKey ? CATEGORY_STYLES[matchedKey] : FALLBACK_STYLE;
+};
+
+/**
  * Generates an SVG Data URI containing the course icon and name.
- * Layout: Icon centered top, Name centered bottom (up to 2 lines).
  */
 const generateCourseThumbnail = (category: string, courseName: string): string => {
   try {
-    const style = CATEGORY_STYLES[category] || FALLBACK_STYLE;
+    const style = getStyleForCategory(category);
     const width = 800;
-    const height = 450; // 16:9 Aspect Ratio
+    const height = 450;
     
     // Text Wrapping Logic
     const maxCharsPerLine = 25;
@@ -67,14 +82,10 @@ const generateCourseThumbnail = (category: string, courseName: string): string =
       }
     }
     
-    // Truncate line 2 if too long
-    // Use Array.from to correctly handle surrogate pairs (emojis) during truncation
-    const line2Chars = Array.from(line2);
-    if (line2Chars.length > 30) {
-      line2 = line2Chars.slice(0, 27).join('') + '...';
+    if (line2.length > 30) {
+      line2 = line2.substring(0, 27) + '...';
     }
 
-    // Sanitize text to avoid breaking XML structure
     const safeLine1 = escapeXml(line1);
     const safeLine2 = escapeXml(line2);
 
@@ -86,21 +97,13 @@ const generateCourseThumbnail = (category: string, courseName: string): string =
             <stop offset="100%" style="stop-color:${style.colors[1]};stop-opacity:1" />
           </linearGradient>
         </defs>
-        
-        <!-- Background -->
         <rect width="100%" height="100%" fill="url(#grad)" />
-        
-        <!-- Subtle Texture/Pattern Overlay -->
         <rect width="100%" height="100%" fill="#ffffff" opacity="0.05" />
         <circle cx="10%" cy="10%" r="200" fill="#ffffff" opacity="0.05" />
         <circle cx="90%" cy="90%" r="150" fill="#000000" opacity="0.05" />
-
-        <!-- Icon Container (Center Upper) -->
         <g transform="translate(${width/2 - 60}, ${height/2 - 90}) scale(5)">
           <path d="${style.icon}" fill="#ffffff" opacity="0.9" />
         </g>
-
-        <!-- Text (Center Lower) -->
         <text x="50%" y="${height * 0.75}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="42" fill="#ffffff" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
           ${safeLine1}
         </text>
@@ -112,17 +115,12 @@ const generateCourseThumbnail = (category: string, courseName: string): string =
       </svg>
     `.trim();
 
-    // Robust Unicode-safe Base64 Encoding
-    // We use TextEncoder to convert UTF-16 string to UTF-8 bytes, then convert bytes to string, then btoa.
-    // Adding charset=utf-8 to data URI helps some browsers decode non-ASCII correctly.
     const utf8Bytes = new TextEncoder().encode(svg);
     const binaryString = Array.from(utf8Bytes, (byte) => String.fromCharCode(byte)).join('');
     const encoded = window.btoa(binaryString);
     
     return `data:image/svg+xml;charset=utf-8;base64,${encoded}`;
   } catch (error) {
-    console.warn("Failed to generate thumbnail for", courseName, error);
-    // Return a solid color placeholder if generation fails, instead of complex SVG
     return "data:image/svg+xml;charset=utf-8;base64," + window.btoa(`
       <svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
         <rect width="100%" height="100%" fill="#cbd5e1"/>
@@ -164,30 +162,78 @@ export const fetchCoursesFromSupabase = async (): Promise<Course[]> => {
     throw new Error("SUPABASE_NOT_CONFIGURED");
   }
 
-  let { data, error } = await supabase.from('courses').select('*');
+  let allData: any[] = [];
+  let page = 0;
+  const pageSize = 1000;
+  let hasMore = true;
+  let tableName = 'courses';
 
-  if (error && (error.code === '42P01' || error.message.includes('does not exist') || error.message.includes('Could not find the table'))) {
-    console.warn("Table 'courses' not found, attempting 'Courses'...");
-    const retry = await supabase.from('Courses').select('*');
-    if (!retry.error) {
-      data = retry.data;
-      error = retry.error;
+  // Pagination loop to fetch all data from Supabase
+  // Supabase limits responses to 1000 rows by default, so we must page through.
+  try {
+    while (hasMore) {
+      // Fetch chunk
+      let { data, error } = await supabase
+        .from(tableName)
+        .select('*')
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+
+      // --- Error Handling & Fallback ---
+      
+      // Fallback for case-sensitive table names (only check on first page)
+      if (page === 0 && error && (error.code === '42P01' || error.message.includes('not find') || error.message.includes('does not exist'))) {
+        console.warn(`Table '${tableName}' not found, attempting 'Courses'...`);
+        tableName = 'Courses';
+        const retry = await supabase
+          .from(tableName)
+          .select('*')
+          .range(0, pageSize - 1);
+        
+        data = retry.data;
+        error = retry.error;
+      }
+
+      if (error) {
+        console.error('Supabase Fetch Error:', error);
+        if (error.code === '42P01' || error.message.includes('not find') || error.message.includes('does not exist')) {
+          throw new Error("TABLE_NOT_FOUND");
+        }
+        throw new Error(`Database Error: ${error.message}`);
+      }
+
+      // --- Data Aggregation ---
+
+      if (data && data.length > 0) {
+        allData = [...allData, ...data];
+        
+        // If we got less than pageSize, we've reached the end
+        if (data.length < pageSize) {
+          hasMore = false;
+        } else {
+          page++;
+        }
+      } else {
+        hasMore = false; // No data returned, stop
+      }
+
+      // Safety break to prevent infinite loops on extremely large/malformed APIs
+      if (page > 50) { // Limit to 50k rows for safety
+        console.warn("Reached 50k row limit, stopping fetch.");
+        hasMore = false;
+      }
     }
+  } catch (err: any) {
+    console.error("Critical Fetch Error:", err);
+    throw err; // Re-throw to be caught by App.tsx
   }
 
-  if (error) {
-    console.error('Supabase Error Details:', JSON.stringify(error, null, 2));
-    if (error.code === '42P01' || error.message.includes('Could not find the table') || error.message.includes('does not exist')) {
-      throw new Error("TABLE_NOT_FOUND");
-    }
-    throw new Error(`Database Error: ${error.message}`);
-  }
+  if (allData.length === 0) return [];
 
-  if (!data) return [];
+  // --- Processing Data ---
 
   const coursesMap = new Map<string, Course>();
 
-  data.forEach((row: any) => {
+  allData.forEach((row: any) => {
     const courseName = getCol(row, ['course_name', 'Course Name', 'name']);
     const lecturer = getCol(row, ['lecturer', 'Lecturer']);
     const categoryRaw = getCol(row, ['course_category', 'Course Category', 'category']);
@@ -200,21 +246,13 @@ export const fetchCoursesFromSupabase = async (): Promise<Course[]> => {
 
     if (!courseName || !videoLink) return;
 
+    // Use name + lecturer as unique key to group videos into courses
     const courseKey = `${courseName}-${lecturer}`;
 
     if (!coursesMap.has(courseKey)) {
-      let category = CourseCategory.BUSINESS;
-      
-      // Category Matching
-      Object.values(CourseCategory).forEach(cat => {
-        if ((categoryRaw || '').toLowerCase().includes(cat.toLowerCase())) {
-          category = cat;
-        }
-      });
+      // Use raw category from DB, fallback to 'General'
+      const category = (categoryRaw || '').trim() || 'General';
 
-      // --- GENERATE THUMBNAIL ---
-      // This is now purely deterministic based on Category and Name
-      // No external API calls, no broken links.
       const thumbnail = generateCourseThumbnail(category, courseName);
 
       coursesMap.set(courseKey, {
@@ -229,7 +267,7 @@ export const fetchCoursesFromSupabase = async (): Promise<Course[]> => {
         topics: [],
         videos: [],
         link: '',
-        thumbnail: thumbnail, // SVG Data URI
+        thumbnail: thumbnail,
         description: `Learn ${courseName} with ${lecturer}. Comprehensive training from ${source}.`,
         rating: 4.8
       });
@@ -237,6 +275,7 @@ export const fetchCoursesFromSupabase = async (): Promise<Course[]> => {
 
     const course = coursesMap.get(courseKey)!;
     
+    // Add video segment
     course.videos.push({
       title: videoTopic || `Lesson ${course.videos.length + 1}`,
       duration: videoDuration || '0m',
