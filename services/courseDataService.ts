@@ -34,62 +34,74 @@ const FALLBACK_STYLE = { colors: ['#64748b', '#475569'], icon: ICONS.BRIEFCASE }
  * Layout: Icon centered top, Name centered bottom (up to 2 lines).
  */
 const generateCourseThumbnail = (category: string, courseName: string): string => {
-  const style = CATEGORY_STYLES[category] || FALLBACK_STYLE;
-  const width = 800;
-  const height = 450; // 16:9 Aspect Ratio
-  
-  // Text Wrapping Logic
-  const maxCharsPerLine = 25;
-  const words = courseName.split(' ');
-  let line1 = '';
-  let line2 = '';
+  try {
+    const style = CATEGORY_STYLES[category] || FALLBACK_STYLE;
+    const width = 800;
+    const height = 450; // 16:9 Aspect Ratio
+    
+    // Text Wrapping Logic
+    const maxCharsPerLine = 25;
+    const words = (courseName || 'Unknown Course').split(' ');
+    let line1 = '';
+    let line2 = '';
 
-  for (const word of words) {
-    if ((line1 + word).length <= maxCharsPerLine) {
-      line1 += (line1 ? ' ' : '') + word;
-    } else {
-      line2 += (line2 ? ' ' : '') + word;
+    for (const word of words) {
+      if ((line1 + word).length <= maxCharsPerLine) {
+        line1 += (line1 ? ' ' : '') + word;
+      } else {
+        line2 += (line2 ? ' ' : '') + word;
+      }
     }
+    // Truncate line 2 if too long
+    if (line2.length > 30) line2 = line2.substring(0, 27) + '...';
+
+    // Sanitize text to avoid breaking XML
+    const safeLine1 = line1.replace(/[<>&'"]/g, '');
+    const safeLine2 = line2.replace(/[<>&'"]/g, '');
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:${style.colors[0]};stop-opacity:1" />
+            <stop offset="100%" style="stop-color:${style.colors[1]};stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        
+        <!-- Background -->
+        <rect width="100%" height="100%" fill="url(#grad)" />
+        
+        <!-- Subtle Texture/Pattern Overlay -->
+        <rect width="100%" height="100%" fill="#ffffff" opacity="0.05" />
+        <circle cx="10%" cy="10%" r="200" fill="#ffffff" opacity="0.05" />
+        <circle cx="90%" cy="90%" r="150" fill="#000000" opacity="0.05" />
+
+        <!-- Icon Container (Center Upper) -->
+        <g transform="translate(${width/2 - 60}, ${height/2 - 90}) scale(5)">
+          <path d="${style.icon}" fill="#ffffff" opacity="0.9" />
+        </g>
+
+        <!-- Text (Center Lower) -->
+        <text x="50%" y="${height * 0.75}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="42" fill="#ffffff" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+          ${safeLine1}
+        </text>
+        ${safeLine2 ? `
+        <text x="50%" y="${height * 0.86}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="42" fill="#ffffff" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+          ${safeLine2}
+        </text>
+        ` : ''}
+      </svg>
+    `.trim();
+
+    // Encode SVG to Base64 safely handling Unicode characters
+    // The standard btoa() fails with Unicode strings. We use unescape(encodeURIComponent()) as a polyfill.
+    const encoded = window.btoa(unescape(encodeURIComponent(svg)));
+    return `data:image/svg+xml;base64,${encoded}`;
+  } catch (error) {
+    console.warn("Failed to generate thumbnail for", courseName, error);
+    // Return a simple grey placeholder if generation fails
+    return "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iNDUwIiB2aWV3Qm94PSIwIDAgODAwIDQ1MCI+PHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI0NTAiIGZpbGw9IiMzMzMiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiIgZm9udC1zaXplPSIyMCI+SW1hZ2UgRXJyb3I8L3RleHQ+PC9zdmc+";
   }
-  // Truncate line 2 if too long
-  if (line2.length > 30) line2 = line2.substring(0, 27) + '...';
-
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-      <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:${style.colors[0]};stop-opacity:1" />
-          <stop offset="100%" style="stop-color:${style.colors[1]};stop-opacity:1" />
-        </linearGradient>
-      </defs>
-      
-      <!-- Background -->
-      <rect width="100%" height="100%" fill="url(#grad)" />
-      
-      <!-- Subtle Texture/Pattern Overlay -->
-      <rect width="100%" height="100%" fill="#ffffff" opacity="0.05" />
-      <circle cx="10%" cy="10%" r="200" fill="#ffffff" opacity="0.05" />
-      <circle cx="90%" cy="90%" r="150" fill="#000000" opacity="0.05" />
-
-      <!-- Icon Container (Center Upper) -->
-      <g transform="translate(${width/2 - 60}, ${height/2 - 90}) scale(5)">
-        <path d="${style.icon}" fill="#ffffff" opacity="0.9" />
-      </g>
-
-      <!-- Text (Center Lower) -->
-      <text x="50%" y="${height * 0.75}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="42" fill="#ffffff" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-        ${line1}
-      </text>
-      ${line2 ? `
-      <text x="50%" y="${height * 0.86}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="42" fill="#ffffff" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-        ${line2}
-      </text>
-      ` : ''}
-    </svg>
-  `.trim();
-
-  // Encode SVG to Base64
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
 };
 
 

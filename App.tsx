@@ -3,7 +3,6 @@ import { Search, Filter, BookOpen, Layers, Clock, XCircle, PlayCircle, Loader2, 
 import { CourseCategory, Course, FilterState } from './types';
 import CourseCard from './components/CourseCard';
 import CourseModal from './components/CourseModal';
-import AIChat from './components/AIChat';
 import { fetchCoursesFromSupabase } from './services/courseDataService';
 import { APP_VERSION } from './constants';
 
@@ -43,6 +42,11 @@ const App: React.FC = () => {
     sources: [],
     maxDuration: null
   });
+
+  // Version Check Logging
+  useEffect(() => {
+    console.log(`%c SkillZaty v${APP_VERSION} Running `, 'background: #4f46e5; color: white; font-weight: bold; padding: 4px 8px; border-radius: 4px;');
+  }, []);
 
   // Handle Scroll to Top Visibility
   useEffect(() => {
@@ -506,8 +510,6 @@ const App: React.FC = () => {
           setInitialVideoIndex(null);
         }} 
       />
-      
-      <AIChat courses={courses} />
     </div>
   );
 };
