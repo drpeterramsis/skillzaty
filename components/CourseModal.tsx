@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Course, CourseVideo } from '../types';
-import { X, Clock, PlayCircle, User, Tag, BookOpen, ListVideo, PauseCircle, ExternalLink, Globe } from 'lucide-react';
+import { X, Clock, PlayCircle, User, BookOpen, ListVideo, PauseCircle, ExternalLink, Globe } from 'lucide-react';
 
 interface CourseModalProps {
   course: Course | null;
@@ -128,24 +128,6 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
                 <p className="text-slate-700 leading-relaxed text-base font-normal">
                   {course.description}
                 </p>
-              </div>
-
-              {/* Tags */}
-              <div>
-                 <div className="flex items-center mb-3">
-                   <Tag size={16} className="mr-2 text-indigo-500" />
-                   <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Topics</h4>
-                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {course.topics.map((topic, index) => (
-                    <span 
-                      key={index}
-                      className="px-3 py-1.5 bg-white text-slate-700 rounded-lg text-sm font-medium border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors"
-                    >
-                      {topic}
-                    </span>
-                  ))}
-                </div>
               </div>
             </div>
 
