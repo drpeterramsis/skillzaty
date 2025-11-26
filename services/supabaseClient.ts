@@ -60,12 +60,5 @@ export const clearSupabaseConfig = () => {
   }
 };
 
-export const signInWithEmail = async (email: string) => {
-  if (!supabase) throw new Error("Supabase not configured");
-  return supabase.auth.signInWithOtp({ email });
-};
-
-export const signOut = async () => {
-  if (!supabase) return;
-  return supabase.auth.signOut();
-};
+// Removed signInWithEmail and signOut as we are using a custom Gatekeeper logic (Database check + LocalStorage)
+// This ensures we don't accidentally send magic links when the user requested direct access.
