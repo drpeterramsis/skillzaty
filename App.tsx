@@ -45,7 +45,7 @@ const App: React.FC = () => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [initialVideoIndex, setInitialVideoIndex] = useState<number | null>(null);
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed on desktop for full overlay effect, or true if preferred
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed on desktop
   
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -58,6 +58,11 @@ const App: React.FC = () => {
   useEffect(() => {
     console.log(`%c SkillZaty v${APP_VERSION} Running `, 'background: #4f46e5; color: white; font-weight: bold; padding: 4px 8px; border-radius: 4px;');
   }, []);
+
+  // Auto-scroll to top when filters change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [filters]);
 
   // Handle Scroll to Top Visibility
   // Since we removed overflow-y-auto from main, the window now scrolls
@@ -80,8 +85,7 @@ const App: React.FC = () => {
         setLoading(true);
         const data = await fetchCoursesFromSupabase();
         setCourses(data);
-        // Open sidebar by default on large screens if data loaded successfully
-        setIsSidebarOpen(window.innerWidth >= 1024);
+        // Sidebar is kept closed by default (removed auto-open logic)
       } catch (err: any) {
         console.error("App load error:", err);
         const msg = err.message || '';
