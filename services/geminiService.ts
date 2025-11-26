@@ -4,8 +4,11 @@ import { Course } from '../types';
 let genAI: GoogleGenAI | null = null;
 
 export const initializeGemini = () => {
-  if (process.env.API_KEY) {
-    genAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Safely check for process.env to avoid ReferenceErrors in browser environments
+  const apiKey = (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : null;
+  
+  if (apiKey) {
+    genAI = new GoogleGenAI({ apiKey });
   }
 };
 

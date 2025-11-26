@@ -3,6 +3,7 @@ import { Search, Filter, BookOpen, Layers, Clock, XCircle, PlayCircle, Loader2, 
 import { CourseCategory, Course, FilterState } from './types';
 import CourseCard from './components/CourseCard';
 import CourseModal from './components/CourseModal';
+import AIChat from './components/AIChat';
 import { fetchCoursesFromSupabase } from './services/courseDataService';
 import { APP_VERSION } from './constants';
 
@@ -510,6 +511,8 @@ const App: React.FC = () => {
           setInitialVideoIndex(null);
         }} 
       />
+      
+      <AIChat courses={courses} />
     </div>
   );
 };
