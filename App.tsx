@@ -575,15 +575,24 @@ const App: React.FC = () => {
       >
         <div className="h-full overflow-y-auto p-5 pb-24 no-scrollbar">
           
-          {/* Mobile Header */}
-          <div className="flex justify-between items-center md:hidden mb-6">
-              <h2 className="font-bold text-lg text-slate-900">Filters</h2>
-              <button 
-              onClick={() => setShowFiltersMobile(false)}
-              className="p-1 text-slate-400 hover:text-slate-600"
-              >
-              <XCircle size={24} />
-              </button>
+          {/* Mobile Header with Clear Button */}
+          <div className="md:hidden mb-6">
+             <div className="flex justify-between items-center mb-4">
+               <h2 className="font-bold text-lg text-slate-900">Filters</h2>
+               <button 
+                 onClick={() => setShowFiltersMobile(false)}
+                 className="p-1 text-slate-400 hover:text-slate-600"
+               >
+                 <XCircle size={24} />
+               </button>
+             </div>
+             {/* Mobile Reset - Moved to top for better visibility */}
+             <button 
+               onClick={resetFilters}
+               className="w-full py-2.5 text-center text-sm text-red-600 font-bold border border-red-200 rounded-lg bg-red-50 hover:bg-red-100 transition-colors shadow-sm"
+             >
+               Clear All Filters
+             </button>
           </div>
 
           {/* Desktop Filter Header (Only when open) */}
@@ -670,16 +679,6 @@ const App: React.FC = () => {
                   ))}
                   </div>
               </div>
-
-              {/* Mobile Reset */}
-              <div className="md:hidden pt-4 border-t border-slate-100">
-                <button 
-                  onClick={resetFilters}
-                  className="w-full py-2 text-center text-sm text-red-500 font-medium border border-red-200 rounded-lg hover:bg-red-50"
-                >
-                  Clear All Filters
-                </button>
-              </div>
           </div>
         </div>
       </aside>
@@ -752,8 +751,8 @@ const App: React.FC = () => {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          // Adjusted position since chatbot is removed
-          className="fixed bottom-8 right-6 z-30 bg-white text-slate-600 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-indigo-600 hover:text-white transition-all duration-300 transform hover:scale-110 group"
+          // Adjusted position bottom-20 to clear the footer
+          className="fixed bottom-20 right-6 z-30 bg-white text-slate-600 p-3 rounded-full shadow-lg border border-slate-200 hover:bg-indigo-600 hover:text-white transition-all duration-300 transform hover:scale-110 group"
           aria-label="Scroll to top"
         >
           <ArrowUp size={20} className="group-hover:-translate-y-1 transition-transform" />

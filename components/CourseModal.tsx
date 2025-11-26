@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Course, CourseVideo } from '../types';
-import { X, Clock, PlayCircle, User, Tag, BookOpen, ListVideo, PauseCircle, ExternalLink, Lock, RotateCw, Globe } from 'lucide-react';
+import { X, Clock, PlayCircle, User, Tag, BookOpen, ListVideo, PauseCircle, ExternalLink, Globe } from 'lucide-react';
 
 interface CourseModalProps {
   course: Course | null;
@@ -22,8 +22,10 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
 
   if (!course) return null;
 
-  // Direct link usage without modification as requested
-  const currentExternalLink = activeVideo ? activeVideo.link : course.link;
+  // Determine which link and title to display
+  const targetLink = activeVideo ? activeVideo.link : course.link;
+  const targetTitle = activeVideo ? activeVideo.title : "Start Course";
+  const targetDuration = activeVideo ? activeVideo.duration : course.duration;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-4 overflow-hidden">
@@ -31,116 +33,55 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
         className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity" 
         onClick={onClose}
       />
-      <div className="relative bg-white md:rounded-2xl shadow-2xl w-full max-w-5xl h-full md:h-[92vh] flex flex-col overflow-hidden animate-fade-in-up border border-slate-700/50">
+      <div className="relative bg-white md:rounded-2xl shadow-2xl w-full max-w-5xl h-full md:h-[90vh] flex flex-col overflow-hidden animate-fade-in-up border border-slate-700/50">
         
-        {/* Player / Header Section */}
-        <div className="flex-shrink-0 bg-black relative w-full aspect-video md:aspect-[21/9] lg:aspect-video max-h-[50vh] group/player">
-          {/* External Link Overlay Button - Always available for quick access */}
-          <div className="absolute top-4 left-4 z-30 opacity-0 group-hover/player:opacity-100 transition-opacity duration-300">
-             <a 
-               href={currentExternalLink}
-               target="_blank"
-               rel="noopener noreferrer"
-               className="bg-black/60 hover:bg-indigo-600 text-white px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-md flex items-center transition-all border border-white/10"
-             >
-               <ExternalLink size={14} className="mr-1.5" />
-               Open in Browser
-             </a>
+        {/* Compact Banner Section */}
+        <div className="flex-shrink-0 bg-slate-900 relative w-full h-48 md:h-56 group/banner overflow-hidden">
+          
+          {/* Background Image with Blur */}
+          <div className="absolute inset-0">
+             <img 
+               src={course.thumbnail} 
+               alt={course.name} 
+               className="w-full h-full object-cover opacity-40 blur-sm scale-105"
+             />
+             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
           </div>
 
+          {/* Close Button */}
           <button 
             onClick={onClose}
-            className="absolute top-4 right-4 z-30 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors backdrop-blur-md border border-white/10"
+            className="absolute top-4 right-4 z-30 bg-black/40 hover:bg-black/60 text-white/80 hover:text-white p-2 rounded-full transition-all backdrop-blur-md border border-white/10"
           >
             <X size={20} />
           </button>
 
-          {activeVideo ? (
-            /* SIMULATED BROWSER INTERFACE 
-               Replaces iframe to avoid X-Frame-Options and privacy errors while maintaining app immersion.
-            */
-            <div className="absolute inset-0 z-10 bg-slate-100 flex flex-col">
-                {/* Browser Chrome / Header */}
-                <div className="bg-slate-800 px-4 py-2 flex items-center gap-4 shrink-0 border-b border-slate-700">
-                    {/* Traffic Lights */}
-                    <div className="flex gap-1.5">
-                        <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                        <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
-                        <div className="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-                    </div>
-                    {/* URL Bar */}
-                    <div className="flex-1 bg-slate-900/50 h-8 rounded-md flex items-center px-3 text-xs text-slate-400 font-mono border border-slate-700/50">
-                        <Lock size={10} className="mr-2 text-slate-500" />
-                        <span className="truncate opacity-80">{activeVideo.link}</span>
-                    </div>
-                    {/* Actions */}
-                    <div className="flex gap-3 text-slate-400">
-                        <button className="hover:text-white cursor-pointer bg-transparent border-0 p-0 text-inherit" title="Refresh">
-                            <RotateCw size={14} />
-                        </button>
-                        <button 
-                            className="hover:text-white cursor-pointer bg-transparent border-0 p-0 text-inherit" 
-                            title="Open in New Tab" 
-                            onClick={() => window.open(activeVideo.link, '_blank')}
-                        >
-                            <ExternalLink size={14} />
-                        </button>
-                    </div>
-                </div>
+          {/* Main Call to Action Content */}
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center">
+             <div className="w-12 h-12 mb-3 bg-indigo-600/90 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 text-white">
+                <Globe size={24} />
+             </div>
+             
+             <h3 className="text-white text-lg md:text-xl font-bold mb-1 drop-shadow-md line-clamp-1 max-w-2xl">
+               {activeVideo ? `Selected Lesson: ${activeVideo.title}` : course.name}
+             </h3>
+             
+             <p className="text-slate-300 text-xs md:text-sm mb-5 font-medium flex items-center gap-2">
+                <span className="uppercase tracking-wider">{course.source}</span>
+                <span className="w-1 h-1 rounded-full bg-slate-400" />
+                <span>{targetDuration}</span>
+             </p>
 
-                {/* Content Placeholder */}
-                <div className="flex-1 relative flex flex-col items-center justify-center p-6 bg-slate-50 overflow-hidden">
-                    {/* Blurry Background of Thumbnail */}
-                    <div className="absolute inset-0">
-                        <img src={course.thumbnail} alt="" className="w-full h-full object-cover blur-lg opacity-30 scale-110" />
-                        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
-                    </div>
-                    
-                    {/* Access Card */}
-                    <div className="relative z-10 bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-white/50 max-w-md w-full text-center">
-                        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-indigo-200">
-                            <Globe size={32} />
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-2">External Content</h3>
-                        <p className="text-slate-600 mb-6 text-sm leading-relaxed">
-                            This lesson is hosted on <strong>{course.source}</strong>. 
-                            <br/>
-                            We've prepared a secure link for you to view it.
-                        </p>
-                        <a 
-                            href={activeVideo.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all transform hover:scale-[1.02] shadow-lg shadow-indigo-200 group/btn"
-                        >
-                            <span>Open Lesson</span>
-                            <ExternalLink size={18} className="ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                        </a>
-                        <div className="mt-4 pt-4 border-t border-slate-200/60 text-[10px] text-slate-400 uppercase tracking-wider font-semibold flex justify-between">
-                            <span>{activeVideo.duration}</span>
-                            <span className="truncate max-w-[180px]">{activeVideo.title}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          ) : (
-            <>
-              {/* If no video playing, show the generated thumbnail */}
-              <img 
-                src={course.thumbnail} 
-                alt={course.name} 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/10" />
-
-              {/* Play Button Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-xl border border-white/30">
-                  <PlayCircle size={40} className="text-white" />
-                </div>
-              </div>
-            </>
-          )}
+             <a 
+                href={targetLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-white text-indigo-700 hover:text-indigo-800 hover:bg-slate-50 px-6 py-2.5 rounded-full font-bold text-sm shadow-xl transition-all transform hover:scale-105 active:scale-95"
+             >
+                <span>Open in Browser</span>
+                <ExternalLink size={16} />
+             </a>
+          </div>
         </div>
 
         {/* Scrollable Content */}
@@ -210,7 +151,7 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
 
             {/* Right Column: Playlist */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-0 flex flex-col max-h-[600px]">
+              <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-0 flex flex-col max-h-[500px]">
                 <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
                   <h3 className="font-bold text-slate-900 flex items-center">
                     <ListVideo size={18} className="mr-2 text-indigo-600" />
@@ -242,18 +183,19 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, initialVideoIndex, on
                             </p>
                             <p className="text-xs text-slate-500 flex items-center mt-1">
                               {video.duration}
-                              {isActive && <span className="ml-2 text-indigo-600 font-bold text-[10px] uppercase tracking-wider">Playing</span>}
+                              {isActive && <span className="ml-2 text-indigo-600 font-bold text-[10px] uppercase tracking-wider">Selected</span>}
                             </p>
                           </div>
                         </button>
                         
-                        {/* Option 2: Open External */}
+                        {/* Direct External Link Icon */}
                         <a 
                           href={video.link}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center px-3 text-slate-300 hover:text-indigo-600 hover:bg-indigo-100/50 transition-colors border-l border-transparent hover:border-indigo-100"
                           title="Open in new tab"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <ExternalLink size={16} />
                         </a>
