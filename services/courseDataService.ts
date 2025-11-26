@@ -114,15 +114,21 @@ const generateCourseThumbnail = (category: string, courseName: string): string =
 
     // Robust Unicode-safe Base64 Encoding
     // We use TextEncoder to convert UTF-16 string to UTF-8 bytes, then convert bytes to string, then btoa.
+    // Adding charset=utf-8 to data URI helps some browsers decode non-ASCII correctly.
     const utf8Bytes = new TextEncoder().encode(svg);
     const binaryString = Array.from(utf8Bytes, (byte) => String.fromCharCode(byte)).join('');
     const encoded = window.btoa(binaryString);
     
-    return `data:image/svg+xml;base64,${encoded}`;
+    return `data:image/svg+xml;charset=utf-8;base64,${encoded}`;
   } catch (error) {
     console.warn("Failed to generate thumbnail for", courseName, error);
-    // Return a simple grey placeholder if generation fails
-    return "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iNDUwIiB2aWV3Qm94PSIwIDAgODAwIDQ1MCI+PHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI0NTAiIGZpbGw9IiMzMzMiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiIgZm9udC1zaXplPSIyMCI+SW1hZ2UgRXJyb3I8L3RleHQ+PC9zdmc+";
+    // Return a solid color placeholder if generation fails, instead of complex SVG
+    return "data:image/svg+xml;charset=utf-8;base64," + window.btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+        <rect width="100%" height="100%" fill="#cbd5e1"/>
+        <text x="50%" y="50%" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="24">Image Unavailable</text>
+      </svg>
+    `);
   }
 };
 
